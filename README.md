@@ -7,4 +7,21 @@ https://nuget.org/packages/Lucene.Net.Analysis.MMSeg/
 
 
 # 使用 #
-``Analyzer analyzer = new MMSegAnalyzer();``
+一共三种搜索模式供选择：
+
+SimpleAnalyzer
+```csharp
+Analyzer analyzer = new SimpleAnalyzer();
+```
+
+MaxWordAnalyzer
+```csharp
+Analyzer analyzer = new MaxWordAnalyzer();
+```
+
+ComplexAnalyzer
+```csharp
+Analyzer analyzer = new ComplexAnalyzer();
+```
+
+具体使用方法，请参考代码中的示例和lucene.net的文档
