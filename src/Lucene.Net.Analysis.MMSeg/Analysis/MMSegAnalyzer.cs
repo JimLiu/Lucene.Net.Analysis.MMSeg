@@ -74,8 +74,10 @@ namespace Lucene.Net.Analysis.MMSeg
 
         public override TokenStream TokenStream(string fieldName, System.IO.TextReader reader)
         {
-            Lucene.Net.Analysis.TokenStream ts = new MMSegTokenizer(NewSeg, reader);
-            return ts;
+            Lucene.Net.Analysis.TokenStream result = new MMSegTokenizer(NewSeg, reader);
+            result.Reset();
+            result = new LowerCaseFilter(result);
+            return result;
         }
         
     }

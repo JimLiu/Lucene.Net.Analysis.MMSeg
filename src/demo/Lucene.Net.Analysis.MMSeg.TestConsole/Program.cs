@@ -63,6 +63,23 @@ namespace Lucene.Net.Analysis.MMSeg.TestConsole
             iw.Optimize();
             iw.Dispose();
 
+            //Analyzer a = new MMSegAnalyzer();
+            //string s = "上海东方明珠";
+            //System.IO.StringReader reader = new System.IO.StringReader(s);
+            //Lucene.Net.Analysis.TokenStream ts = a.TokenStream(s, reader);
+            //bool hasnext = ts.IncrementToken();
+            //Lucene.Net.Analysis.Tokenattributes.ITermAttribute ita;
+            //while (hasnext)
+            //{
+            //    ita = ts.GetAttribute<Lucene.Net.Analysis.Tokenattributes.ITermAttribute>();
+            //    Console.WriteLine(ita.Term);
+            //    hasnext = ts.IncrementToken();
+            //}
+            //ts.CloneAttributes();
+            //reader.Close();
+            //a.Close();
+            //Console.ReadKey();
+
             Console.WriteLine();
 
             Console.WriteLine("Building index done!\r\n\r\n");
