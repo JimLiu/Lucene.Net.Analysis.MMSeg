@@ -17,7 +17,6 @@ namespace Lucene.Net.Analysis.MMSeg.TestConsole
     class Program
     {
         static DirectoryInfo INDEX_DIR = new DirectoryInfo("index");
-        static Analyzer analyzer = new MMSegAnalyzer(); //MMSegAnalyzer //StandardAnalyzer
         static void Main(string[] args)
         {
 
@@ -50,7 +49,7 @@ namespace Lucene.Net.Analysis.MMSeg.TestConsole
                 "【用数据告诉你手游有多热】今天，作为本届GMIC 的一部分，GGS全球移动游戏峰会召开。嘉宾和游戏开发者们探讨了移动游戏的现状与发展趋势。手游则是最为重要的一大关键词。盛大游戏总裁钱东海分享了日本最大手游公司CEO预测的数据：2015年全球游戏产业的格局中80%都是手机游戏。http://t.cn/zTHdkFY"
             };
 
-            IndexWriter iw = new IndexWriter(FSDirectory.Open(INDEX_DIR), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+            IndexWriter iw = new IndexWriter(FSDirectory.Open(INDEX_DIR), new MMSegAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
             int i = 0;
             foreach (string text in texts)
             {
@@ -98,7 +97,7 @@ namespace Lucene.Net.Analysis.MMSeg.TestConsole
         static void Search(string keyword)
         {
             IndexSearcher searcher = new IndexSearcher(FSDirectory.Open(INDEX_DIR), true);
-            QueryParser qp = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, "body", analyzer);
+            QueryParser qp = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, "body", new MMSegAnalyzer());
             Query query = qp.Parse(keyword); //2008年底  
             Console.WriteLine("query> {0}", query);
 

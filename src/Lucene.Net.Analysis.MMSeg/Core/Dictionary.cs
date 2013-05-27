@@ -23,12 +23,12 @@ namespace Lucene.Net.Analysis.MMSeg
         /// <summary>
         /// 记录word文件的最后修改时间
         /// </summary>
-        Dictionary<FileInfo, long> wordsLastTime = null;
+        Dictionary<string, long> wordsLastTime = null;
         long lastLoadTime = 0;
 
         static string defaultPath = null;
 
-        static Dictionary<FileInfo, Dictionary> dics = new Dictionary<FileInfo, Dictionary>();
+        static Dictionary<string, Dictionary> dics = new Dictionary<string, Dictionary>();
 
         static object m_syncOjbect = new object();
 
@@ -40,7 +40,7 @@ namespace Lucene.Net.Analysis.MMSeg
         void init(FileInfo path)
         {
             dicPath = path;
-            wordsLastTime = new Dictionary<FileInfo, long>();
+            wordsLastTime = new Dictionary<string, long>();
             reload();
         }
 
@@ -59,13 +59,13 @@ namespace Lucene.Net.Analysis.MMSeg
             if (!file.Exists) return;
             lock (m_syncOjbect)
             {
-                if (wordsLastTime.ContainsKey(file))
+                if (wordsLastTime.ContainsKey(file.ToString()))
                 {
-                    wordsLastTime[file] = file.LastWriteTime.ToFileTime();
+                    wordsLastTime[file.ToString()] = file.LastWriteTime.ToFileTime();
                 }
                 else
                 {
-                    wordsLastTime.Add(file, file.LastWriteTime.ToFileTime());
+                    wordsLastTime.Add(file.ToString(), file.LastWriteTime.ToFileTime());
                 }
             }
         }
@@ -183,16 +183,17 @@ namespace Lucene.Net.Analysis.MMSeg
         public static Dictionary getInstance(FileInfo path)
         {
             Dictionary dic = null;
+            string key = path.ToString();
             lock (m_syncOjbect)
             {
-                if (dics.ContainsKey(path))
+                if (dics.ContainsKey(key))
                 {
-                    dic = dics[path];
+                    dic = dics[key];
                 }
                 else
                 {
                     dic = new Dictionary(path);
-                    dics.Add(path, dic);
+                    dics.Add(key, dic);
                 }
             }
             return dic;
@@ -225,12 +226,13 @@ namespace Lucene.Net.Analysis.MMSeg
         public static Dictionary clear(FileInfo path)
         {
             Dictionary result = null;
+            string key = path.ToString();
             lock (m_syncOjbect)
             {
-                if (dics.ContainsKey(path))
+                if (dics.ContainsKey(key))
                 {
-                    result = dics[path];
-                    dics.Remove(path);
+                    result = dics[key];
+                    dics.Remove(key);
                 }
             }
             return result;
@@ -249,10 +251,11 @@ namespace Lucene.Net.Analysis.MMSeg
             get
             {
                 //检查是否有修改的文件,包括删除的
-                foreach (KeyValuePair<FileInfo, long> key in wordsLastTime)
+                foreach (KeyValuePair<string, long> key in wordsLastTime)
                 {
-                    if (!key.Key.Exists) return true;
-                    if (key.Key.LastAccessTime.ToFileTime()!= key.Value)
+                    FileInfo info = new FileInfo(key.Key);
+                    if (!info.Exists) return true;
+                    if (info.LastAccessTime.ToFileTime() != key.Value)
                         return true;
                 }
                 //检查是否有新文件
@@ -261,7 +264,7 @@ namespace Lucene.Net.Analysis.MMSeg
                 {
                     //有新词典文件
                     fi = new FileInfo(file);
-                    if (!wordsLastTime.ContainsKey(fi))
+                    if (!wordsLastTime.ContainsKey(file))
                         return true;
                 }
                 return false;
@@ -275,7 +278,7 @@ namespace Lucene.Net.Analysis.MMSeg
         /// <returns></returns>
         public bool reload()
         {
-            Dictionary<FileInfo, long> oldWordsLastTime = new Dictionary<FileInfo, long>(wordsLastTime);
+            Dictionary<string, long> oldWordsLastTime = new Dictionary<string, long>(wordsLastTime);
             Dictionary<char, CharNode> oldDict = dict;
             Dictionary<char, object> oldUnit = unit;
 
@@ -289,7 +292,7 @@ namespace Lucene.Net.Analysis.MMSeg
             catch (Exception ex)
             {
                 //rollback
-                foreach (KeyValuePair<FileInfo, long> key in oldWordsLastTime)
+                foreach (KeyValuePair<string, long> key in oldWordsLastTime)
                 {
                     wordsLastTime.Add(key.Key, key.Value);
                 }
